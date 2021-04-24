@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Air Quality</title>
+</head>
+<body>
+
+<div>
+    <h3>CO</h3>
+    <p th:text="${airQuality.co} + ' &#8457;'">Temperature</p>
+    <h3>NO</h3>
+    <p th:text="${airQuality.no} + ' &#8457;'">Feels Like</p>
+    <h3>NO2</h3>
+    <p th:text="${airQuality.no2} + ' mph'"></p>
+    <h3>O3</h3>
+    <p th:text="${airQuality.o3}"></p>
+    <h3>SO2</h3>
+    <p th:text="${airQuality.so2}"></p>
+    <h3>PM25</h3>
+    <p th:text="${airQuality.pm2_5}"></p>
+    <h3>PM10</h3>
+    <p th:text="${airQuality.pm10}"></p>
+    <h3>NH3</h3>
+    <p th:text="${airQuality.nh3}"></p>
+    <h3>Time</h3>
+    <p th:text="${airQuality.dt}"></p>
+</div>
+</body>
+</html>
