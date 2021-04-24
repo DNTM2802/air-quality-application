@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Air Quality - Historical</title>
 </head>
 <body>
-$END$
+<h3>Historical Data</h3>
+
+<div th:if="${ not#lists.isEmpty(airQualities)}">
+    <table>
+        <tr>
+            <th>CO</th>
+            <th>NO</th>
+            <th>NO2</th>
+            <th>03</th>
+            <th>SO2</th>
+            <th>PM2_5</th>
+            <th>PM10</th>
+            <th>NH3</th>
+            <th>Date</th>
+        </tr>
+        <tr th:each="airQuality : ${airQualities}">
+            <td th:text="${airQuality.co}"></td>
+            <td th:text="${airQuality.no}"></td>
+            <td th:text="${airQuality.no2}"></td>
+            <td th:text="${airQuality.o3}"></td>
+            <td th:text="${airQuality.so2}"></td>
+            <td th:text="${airQuality.pm2_5}"></td>
+            <td th:text="${airQuality.pm10}"></td>
+            <td th:text="${airQuality.nh3}"></td>
+            <td th:text="${airQuality.dt}"></td>
+        </tr>
+        </table>
+</div>
 </body>
 </html>

@@ -2,17 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Air Quality</title>
+    <title>Air Quality - Today</title>
 </head>
 <body>
 
 <div>
     <h3>CO</h3>
-    <p th:text="${airQuality.co} + ' &#8457;'">Temperature</p>
+    <p th:text="${airQuality.co}"></p>
     <h3>NO</h3>
-    <p th:text="${airQuality.no} + ' &#8457;'">Feels Like</p>
+    <p th:text="${airQuality.no}"></p>
     <h3>NO2</h3>
-    <p th:text="${airQuality.no2} + ' mph'"></p>
+    <p th:text="${airQuality.no2}"></p>
     <h3>O3</h3>
     <p th:text="${airQuality.o3}"></p>
     <h3>SO2</h3>
