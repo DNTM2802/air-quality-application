@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Air Quality - Today</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-
+<h3>Today Data</h3>
+<h2 th:text="${location.city} + ', ' + ${location.region} + ', ' +${location.country}"></h2>
 <div>
     <h3>CO</h3>
     <p th:text="${airQuality.co}"></p>
