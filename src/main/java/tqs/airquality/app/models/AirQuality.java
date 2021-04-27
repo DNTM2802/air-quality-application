@@ -1,28 +1,17 @@
 package tqs.airquality.app.models;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import tqs.airquality.app.utils.Location;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
 
-@Entity
 @Getter
 @ToString
-@NoArgsConstructor
 public class AirQuality {
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-
-    @NotEmpty
-    private double coordLat;
-    @NotEmpty
-    private double coordLon;
-    @NotEmpty
+    private Location location;
     private Date dt;
     private int aqi;
 
@@ -35,9 +24,8 @@ public class AirQuality {
     private double pm10;
     private double nh3;
 
-    public AirQuality(@NotEmpty double coordLat,
-                      @NotEmpty double coordLon,
-                      @NotEmpty Date dt,
+    public AirQuality(Location location,
+                      Date dt,
                       int aqi,
                       double co,
                       double no,
@@ -47,8 +35,7 @@ public class AirQuality {
                       double pm2_5,
                       double pm10,
                       double nh3) {
-        this.coordLat = coordLat;
-        this.coordLon = coordLon;
+        this.location = location;
         this.dt = dt;
         this.aqi = aqi;
         this.co = co;
