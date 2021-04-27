@@ -1,0 +1,19 @@
+td.very-good {
+    background-color: #007f5f;
+}
+
+td.good {
+    background-color: #55a630;
+}
+
+td.medium {
+    background-color: #e9c46a;
+}
+
+td.weak {
+    background-color: #f4a261;
+}
+
+td.bad {
+    background-color: #e76f51;
+}
