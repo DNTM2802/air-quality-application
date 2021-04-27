@@ -42,7 +42,13 @@ public class AirQualityController {
     }
 
     @GetMapping("/search")
-    public RedirectView redirectWithUsingRedirectView(RedirectAttributes attributes,String address,String scope, String startDate, String endDate) {
+    public RedirectView redirectWithUsingRedirectView(
+            RedirectAttributes attributes,
+            String address,
+            String scope,
+            String startDate,
+            String endDate
+    ) {
         System.out.println(startDate);
         attributes.addAttribute("address", address);
         assert scope != null;
