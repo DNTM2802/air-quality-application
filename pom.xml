@@ -15,6 +15,9 @@
 	<description>Multi-layer web application to provide details on air quality for a certain region/city.</description>
 	<properties>
 		<java.version>11</java.version>
+		<sonar.projectKey>DNTM2802_air-quality-application</sonar.projectKey>
+		<sonar.organization>dntm2802</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -61,11 +64,83 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>integration-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>add-integration-test-sources</id>
+								<phase>generate-test-sources</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/integration-test/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>3.0.0-M9</version>
+						<executions>
+							<execution>
+								<id>failsafe-integration-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<skipTests>false</skipTests>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>sonar</id>
+			<properties>
+				<sonar.projectKey>DNTM2802_air-quality-application</sonar.projectKey>
+				<sonar.organization>dntm2802</sonar.organization>
+				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonarsource.scanner.maven</groupId>
+						<artifactId>sonar-maven-plugin</artifactId>
+						<version>3.8.0.2131</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>sonar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
