@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Air Quality - Cache Information</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-$END$
+<h2>Cache Information</h2>
+
+<h3>Today Cache</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Total Requests</th>
+        <th>Hits</th>
+        <th>Misses</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${currentDayCache.requests}"></td>
+        <td th:text="${currentDayCache.hits}"></td>
+        <td th:text="${currentDayCache.misses}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Historical Cache</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Total Requests</th>
+        <th>Hits</th>
+        <th>Misses</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${historicalCache.requests}"></td>
+        <td th:text="${historicalCache.hits}"></td>
+        <td th:text="${historicalCache.misses}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Forecast Cache</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Total Requests</th>
+        <th>Hits</th>
+        <th>Misses</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${forecastCache.requests}"></td>
+        <td th:text="${forecastCache.hits}"></td>
+        <td th:text="${forecastCache.misses}"></td>
+    </tr>
+    </tbody>
+</table>
+
 </body>
 </html>

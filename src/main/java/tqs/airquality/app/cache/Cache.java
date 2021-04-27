@@ -5,7 +5,7 @@ import tqs.airquality.app.models.AirQuality;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CurrentDayCache<T> {
+public class Cache<T> {
     private long ttl;
     private int requests;
     private int misses;
@@ -14,7 +14,7 @@ public class CurrentDayCache<T> {
     private Map<String, T> cachedRequests;
     private Map<String, Long> cachedRequestsTtl;
 
-    public CurrentDayCache(long ttl) {
+    public Cache(long ttl) {
         this.ttl = ttl;
         this.requests = 0;
         this.misses = 0;
@@ -23,9 +23,9 @@ public class CurrentDayCache<T> {
         this.cachedRequestsTtl = new HashMap<>();
     }
 
-    public void saveRequestToCache(String address, T obj) {
-        this.cachedRequests.put(address, obj);
-        this.cachedRequestsTtl.put(address, System.currentTimeMillis() + this.ttl * 1000);
+    public void saveRequestToCache(String identifier, T obj) {
+        this.cachedRequests.put(identifier, obj);
+        this.cachedRequestsTtl.put(identifier, System.currentTimeMillis() + this.ttl * 1000);
     }
 
     public T getRequestFromCache(String identifier) {
@@ -40,7 +40,6 @@ public class CurrentDayCache<T> {
         } else {
             this.hits++;
             cachedObj = cachedRequests.get(identifier);
-            this.cachedRequestsTtl.put(identifier, System.currentTimeMillis() + this.ttl * 1000);
 
         }
         return cachedObj;
