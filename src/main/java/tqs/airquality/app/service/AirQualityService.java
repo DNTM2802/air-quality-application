@@ -9,18 +9,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
+import tqs.airquality.app.cache.Cache;
 import tqs.airquality.app.models.AirQuality;
+import tqs.airquality.app.utils.Location;
 
 import java.net.URI;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class AirQualityService {
 
-    @Value("${api.key}")
+    @Value("${api.openweather.key}")
     private String apiKey;
 
     @Autowired
@@ -32,31 +34,33 @@ public class AirQualityService {
     private final static String AIR_QUALITY_TODAY = "http://api.openweathermap.org/data/2.5/air_pollution?lat={coordLat}&lon={coordLon}&appid={apiKey}";
     private final static String AIR_QUALITY_HISTORICAL = "http://api.openweathermap.org/data/2.5/air_pollution/history?lat={coordLat}&lon={coordLon}&start={startDate}&end={endDate}&appid={apiKey}";
     private final static String AIR_QUALITY_FORECAST = "http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={coordLat}&lon={coordLon}&appid={apiKey}";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-    public AirQuality getCurrentAirQuality(float coordLat, float coordLon) {
-        URI url = new UriTemplate(AIR_QUALITY_TODAY).expand(coordLat,coordLon,apiKey);
+    public AirQuality getCurrentAirQuality(Location location) {
+        URI url = new UriTemplate(AIR_QUALITY_TODAY).expand(location.getLatitude(),location.getLongitude(),apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return convertJsonToAirQuality(response);
+        return convertJsonToAirQuality(response, location);
     }
 
-    public List<AirQuality> getHistoricalAirQuality(float coordLat, float coordLon, String startDate, String endDate) {
-        URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(coordLat,coordLon,startDate,endDate,apiKey);
+    public List<AirQuality> getHistoricalAirQuality(Location location, String startDateText, String endDateText) {
+        String startDate = convertStartDateToUnixTSString(startDateText);
+        String endDate = convertEndDateToUnixTSString(endDateText);
+        URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(location.getLatitude(),location.getLongitude(),startDate,endDate,apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return convertJsonToAirQualityList(response);
+        return convertJsonToAirQualityList(response, location);
     }
 
-    public List<AirQuality> getForecastAirQuality(float coordLat, float coordLon) {
-        URI url = new UriTemplate(AIR_QUALITY_FORECAST).expand(coordLat,coordLon,apiKey);
+    public List<AirQuality> getForecastAirQuality(Location location) {
+        URI url = new UriTemplate(AIR_QUALITY_FORECAST).expand(location.getLatitude(),location.getLongitude(),apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return convertJsonToAirQualityList(response);
+        return convertJsonToAirQualityListForecast(response, location);
     }
 
-    private AirQuality convertJsonToAirQuality(ResponseEntity<String> response) {
+    private AirQuality convertJsonToAirQuality(ResponseEntity<String> response, Location location) {
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
             return new AirQuality(
-                root.path("coord").path("lat").asDouble(),
-                root.path("coord").path("lon").asDouble(),
+                location,
                 new Date(Long.parseLong(root.path("list").get(0).path("dt").asText() + "000")),
                 root.path("main").path("aqi").asInt(),
                 root.path("list").get(0).path("components").path("co").asDouble(),
@@ -74,38 +78,19 @@ public class AirQualityService {
         }
     }
 
-    private List<AirQuality> convertJsonToAirQualityList(ResponseEntity<String> response) {
+    private List<AirQuality> convertJsonToAirQualityList(ResponseEntity<String> response, Location location) {
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
-            double lat = root.path("coord").path("lat").asDouble();
-            double lon = root.path("coord").path("lon").asDouble();
-            List<AirQuality> historical = new ArrayList<AirQuality>();
+            List<AirQuality> historical = new ArrayList<>();
             Iterator<JsonNode> iterator = root.withArray("list").elements();
             Date lastDay = null;
             if (iterator.hasNext())
                 lastDay = new Date(Long.parseLong(objectMapper.readTree(iterator.next().toString()).path("dt") + "000"));
             while (iterator.hasNext()){
                 JsonNode n = iterator.next();
-                System.out.println(n);
                 Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
                 if (day.toString().compareTo(lastDay.toString()) != 0) {
-                    historical.add(
-                        new AirQuality(
-                            lat,
-                            lon,
-                            day,
-                            n.path("main").path("aqi").asInt(),
-                            n.path("components").path("co").asDouble(),
-                            n.path("components").path("no").asDouble(),
-                            n.path("components").path("no2").asDouble(),
-                            n.path("components").path("o3").asDouble(),
-                            n.path("components").path("so2").asDouble(),
-                            n.path("components").path("pm2_5").asDouble(),
-                            n.path("components").path("pm10").asDouble(),
-                            n.path("components").path("nh3").asDouble()
-                        )
-                    );
-                    lastDay=day;
+                    lastDay = getDate(location, historical, n, day);
                 }
             }
 
@@ -116,6 +101,78 @@ public class AirQualityService {
         }
     }
 
+    private List<AirQuality> convertJsonToAirQualityListForecast(ResponseEntity<String> response, Location location) {
+        try {
+            JsonNode root = objectMapper.readTree(response.getBody());
+            List<AirQuality> historical = new ArrayList<>();
+            Iterator<JsonNode> iterator = root.withArray("list").elements();
 
+            Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
 
+            long unixTimeStamp = c.getTimeInMillis();
+            Date midnight = new Date(unixTimeStamp);
+            Date lastDay = null;
+            if (iterator.hasNext())
+                lastDay = new Date(Long.parseLong(objectMapper.readTree(iterator.next().toString()).path("dt") + "000"));
+            while (iterator.hasNext()){
+                JsonNode n = iterator.next();
+                Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
+                if (day.compareTo(midnight) > 0 && day.toString().compareTo(lastDay.toString()) != 0) {
+                    lastDay = getDate(location, historical, n, day);
+                }
+            }
+
+            return historical;
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing JSON", e);
+        }
+    }
+
+    private Date getDate(Location location, List<AirQuality> historical, JsonNode n, Date day) {
+        Date lastDay;
+        historical.add(
+                new AirQuality(
+                        location,
+                        day,
+                        n.path("main").path("aqi").asInt(),
+                        n.path("components").path("co").asDouble(),
+                        n.path("components").path("no").asDouble(),
+                        n.path("components").path("no2").asDouble(),
+                        n.path("components").path("o3").asDouble(),
+                        n.path("components").path("so2").asDouble(),
+                        n.path("components").path("pm2_5").asDouble(),
+                        n.path("components").path("pm10").asDouble(),
+                        n.path("components").path("nh3").asDouble()
+                )
+        );
+        lastDay=day;
+        return lastDay;
+    }
+
+    private String convertStartDateToUnixTSString(String dateText) {
+        java.util.Date dateDT = null;
+        try {
+            dateDT = dateFormat.parse(dateText);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert dateDT != null;
+        return String.valueOf((dateDT.getTime() - 86400000L) / 1000L);
+    }
+
+    private String convertEndDateToUnixTSString(String dateText) {
+        java.util.Date dateDT = null;
+        try {
+            dateDT = dateFormat.parse(dateText);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert dateDT != null;
+        return String.valueOf(dateDT.getTime() / 1000L);
+    }
 }
