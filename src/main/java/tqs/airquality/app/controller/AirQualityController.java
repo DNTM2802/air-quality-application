@@ -15,7 +15,6 @@ import tqs.airquality.app.utils.Location;
 import java.util.List;
 
 @Controller
-
 public class AirQualityController {
 
     @Autowired
