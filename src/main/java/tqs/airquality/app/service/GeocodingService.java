@@ -9,11 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
-import tqs.airquality.app.models.AirQuality;
 import tqs.airquality.app.utils.Location;
-
 import java.net.URI;
-import java.sql.Date;
 
 @Service
 public class GeocodingService {
@@ -27,7 +24,7 @@ public class GeocodingService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final static String GEOCODING = "http://api.positionstack.com/v1/forward?access_key={apiKey}&query={address}";
+    private static final String GEOCODING = "http://api.positionstack.com/v1/forward?access_key={apiKey}&query={address}";
 
     public Location getCoordinatesFromAddress(String address) {
         URI url = new UriTemplate(GEOCODING).expand(apiKey,address);

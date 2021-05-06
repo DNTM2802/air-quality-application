@@ -1,7 +1,5 @@
 package tqs.airquality.app.cache;
 
-import tqs.airquality.app.models.AirQuality;
-
 import java.util.HashMap;
 import java.util.Map;
 

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
-import tqs.airquality.app.cache.Cache;
 import tqs.airquality.app.models.AirQuality;
 import tqs.airquality.app.utils.Location;
 
@@ -18,6 +17,8 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class AirQualityService {
@@ -31,10 +32,16 @@ public class AirQualityService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final static String AIR_QUALITY_TODAY = "http://api.openweathermap.org/data/2.5/air_pollution?lat={coordLat}&lon={coordLon}&appid={apiKey}";
-    private final static String AIR_QUALITY_HISTORICAL = "http://api.openweathermap.org/data/2.5/air_pollution/history?lat={coordLat}&lon={coordLon}&start={startDate}&end={endDate}&appid={apiKey}";
-    private final static String AIR_QUALITY_FORECAST = "http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={coordLat}&lon={coordLon}&appid={apiKey}";
+    private static final String AIR_QUALITY_TODAY = "http://api.openweathermap.org/data/2.5/air_pollution?lat={coordLat}&lon={coordLon}&appid={apiKey}";
+    private static final String AIR_QUALITY_HISTORICAL = "http://api.openweathermap.org/data/2.5/air_pollution/history?lat={coordLat}&lon={coordLon}&start={startDate}&end={endDate}&appid={apiKey}";
+    private static final String AIR_QUALITY_FORECAST = "http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={coordLat}&lon={coordLon}&appid={apiKey}";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private static final String COMPONENTS = "components";
+    private static final Logger LOGGER = Logger.getLogger( AirQualityService.class.getName() );
+
+    // ERROR MESSAGES
+    private static final String ERR_JSON = "Error parsing JSON";
+
 
     public AirQuality getCurrentAirQuality(Location location) {
         URI url = new UriTemplate(AIR_QUALITY_TODAY).expand(location.getLatitude(),location.getLongitude(),apiKey);
@@ -43,8 +50,8 @@ public class AirQualityService {
     }
 
     public List<AirQuality> getHistoricalAirQuality(Location location, String startDateText, String endDateText) {
-        String startDate = convertStartDateToUnixTSString(startDateText);
-        String endDate = convertEndDateToUnixTSString(endDateText);
+        var startDate = convertStartDateToUnixTSString(startDateText);
+        var endDate = convertEndDateToUnixTSString(endDateText);
         URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(location.getLatitude(),location.getLongitude(),startDate,endDate,apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToAirQualityList(response, location);
@@ -63,18 +70,18 @@ public class AirQualityService {
                 location,
                 new Date(Long.parseLong(root.path("list").get(0).path("dt").asText() + "000")),
                 root.path("main").path("aqi").asInt(),
-                root.path("list").get(0).path("components").path("co").asDouble(),
-                root.path("list").get(0).path("components").path("no").asDouble(),
-                root.path("list").get(0).path("components").path("no2").asDouble(),
-                root.path("list").get(0).path("components").path("o3").asDouble(),
-                root.path("list").get(0).path("components").path("so2").asDouble(),
-                root.path("list").get(0).path("components").path("pm2_5").asDouble(),
-                root.path("list").get(0).path("components").path("pm10").asDouble(),
-                root.path("list").get(0).path("components").path("nh3").asDouble()
+                root.path("list").get(0).path(COMPONENTS).path("co").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("no").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("no2").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("o3").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("so2").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("pm2_5").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("pm10").asDouble(),
+                root.path("list").get(0).path(COMPONENTS).path("nh3").asDouble()
             );
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing JSON", e);
+            throw new RuntimeException(ERR_JSON, e);
         }
     }
 
@@ -84,20 +91,21 @@ public class AirQualityService {
             List<AirQuality> historical = new ArrayList<>();
             Iterator<JsonNode> iterator = root.withArray("list").elements();
             Date lastDay = null;
-            if (iterator.hasNext())
+            if (iterator.hasNext()) {
                 lastDay = new Date(Long.parseLong(objectMapper.readTree(iterator.next().toString()).path("dt") + "000"));
-            while (iterator.hasNext()){
-                JsonNode n = iterator.next();
-                Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
-                if (day.toString().compareTo(lastDay.toString()) != 0) {
-                    lastDay = getDate(location, historical, n, day);
+                while (iterator.hasNext()) {
+                    JsonNode n = iterator.next();
+                    Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
+                    if (day.toString().compareTo(lastDay.toString()) != 0) {
+                        lastDay = getDate(location, historical, n, day);
+                    }
                 }
             }
 
             return historical;
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing JSON", e);
+            throw new RuntimeException(ERR_JSON, e);
         }
     }
 
@@ -107,29 +115,30 @@ public class AirQualityService {
             List<AirQuality> historical = new ArrayList<>();
             Iterator<JsonNode> iterator = root.withArray("list").elements();
 
-            Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            var c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
             c.set(Calendar.MILLISECOND, 0);
 
             long unixTimeStamp = c.getTimeInMillis();
-            Date midnight = new Date(unixTimeStamp);
+            var midnight = new Date(unixTimeStamp);
             Date lastDay = null;
-            if (iterator.hasNext())
+            if (iterator.hasNext()) {
                 lastDay = new Date(Long.parseLong(objectMapper.readTree(iterator.next().toString()).path("dt") + "000"));
-            while (iterator.hasNext()){
-                JsonNode n = iterator.next();
-                Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
-                if (day.compareTo(midnight) > 0 && day.toString().compareTo(lastDay.toString()) != 0) {
-                    lastDay = getDate(location, historical, n, day);
+                while (iterator.hasNext()) {
+                    JsonNode n = iterator.next();
+                    var day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
+                    if (day.compareTo(midnight) > 0 && day.toString().compareTo(lastDay.toString()) != 0) {
+                        lastDay = getDate(location, historical, n, day);
+                    }
                 }
             }
 
             return historical;
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing JSON", e);
+            throw new RuntimeException(ERR_JSON, e);
         }
     }
 
@@ -159,7 +168,7 @@ public class AirQualityService {
         try {
             dateDT = dateFormat.parse(dateText);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING,"context", e);
         }
         assert dateDT != null;
         return String.valueOf((dateDT.getTime() - 86400000L) / 1000L);
@@ -170,7 +179,7 @@ public class AirQualityService {
         try {
             dateDT = dateFormat.parse(dateText);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING,"context", e);
         }
         assert dateDT != null;
         return String.valueOf(dateDT.getTime() / 1000L);

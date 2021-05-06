@@ -32,7 +32,7 @@
                 <td th:text="${airQuality.no2}" th:classappend="${(airQuality.no2 > 240 ? 'bad' : '') + (airQuality.no2 > 180 ? ' weak' : '') + (airQuality.no2 > 120 ? ' medium' : '') + (airQuality.no2 > 60 ? ' good' : 'very-good')}"></td>
                 <td th:text="${airQuality.o3}" th:classappend="${(airQuality.o3 > 120 ? 'bad' : '') + (airQuality.o3 > 50 ? ' weak' : '') + (airQuality.o3 > 35 ? ' medium' : '') + (airQuality.o3 > 20 ? ' good' : 'very-good')}"></td>
                 <td th:text="${airQuality.so2}" th:classappend="${(airQuality.so2 > 500 ? 'bad' : '') + (airQuality.so2 > 350 ? ' weak' : '') + (airQuality.so2 > 210 ? ' medium' : '') + (airQuality.so2 > 140 ? ' good' : 'very-good')}"></td>
-                <td th:text="${airQuality.pm2_5}"></td>
+                <td th:text="${airQuality.pm25}"></td>
                 <td th:text="${airQuality.pm10}" th:classappend="${(airQuality.pm10 > 10000 ? 'bad' : '') + (airQuality.pm10 > 8500 ? ' weak' : '') + (airQuality.pm10 > 7000 ? ' medium' : '') + (airQuality.pm10 > 5000 ? ' good' : 'very-good')}"></td>
                 <td th:text="${airQuality.nh3}"></td>
                 <td th:text="${airQuality.dt}"></td>

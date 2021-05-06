@@ -27,7 +27,9 @@ public class AirQualityController {
     private Cache<List<AirQuality>> historicalCache = new Cache<>(120);
     private Cache<List<AirQuality>> forecastCache = new Cache<>(120);
 
-    @RequestMapping("/")
+    private static final String LOCATION = "location";
+
+    @RequestMapping(path="/", method={RequestMethod.GET})
     public String home(){
         return "homepage-air-quality";
     }
@@ -48,13 +50,15 @@ public class AirQualityController {
             String startDate,
             String endDate
     ) {
-        System.out.println(startDate);
+        if (address.equals("") || scope.equals(""))
+            return new RedirectView("");
         attributes.addAttribute("address", address);
-        assert scope != null;
         switch (scope) {
             case "forecast":
                 return new RedirectView("forecast");
             case "historical":
+                if (startDate.equals("") || endDate.equals(""))
+                    return new RedirectView("");
                 attributes.addAttribute("startDate", startDate);
                 attributes.addAttribute("endDate", endDate);
                 return new RedirectView("historical");
@@ -67,7 +71,7 @@ public class AirQualityController {
     @GetMapping(value = "/today")
     public String getAirQualityOfTodayFromCoordinates(String address, Model model) {
 
-        AirQuality airQuality = currentDayCache.getRequestFromCache(address);
+        var airQuality = currentDayCache.getRequestFromCache(address);
         Location location;
 
         if (airQuality == null){
@@ -79,7 +83,7 @@ public class AirQualityController {
 
         currentDayCache.saveRequestToCache(address,airQuality);
 
-        model.addAttribute("location", location);
+        model.addAttribute(LOCATION, location);
         model.addAttribute("airQuality", airQuality);
 
         return "current-air-quality";
@@ -100,7 +104,7 @@ public class AirQualityController {
 
         forecastCache.saveRequestToCache(address,airQualities);
 
-        model.addAttribute("location", location);
+        model.addAttribute(LOCATION, location);
         model.addAttribute("airQualities", airQualities);
 
         return "forecast-air-quality";
@@ -127,7 +131,7 @@ public class AirQualityController {
 
         historicalCache.saveRequestToCache(identifier,airQualities);
 
-        model.addAttribute("location", location);
+        model.addAttribute(LOCATION, location);
         model.addAttribute("airQualities", airQualities);
 
         return "historical-air-quality";

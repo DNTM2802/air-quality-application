@@ -20,7 +20,7 @@ public class AirQuality {
     private double no2;
     private double o3;
     private double so2;
-    private double pm2_5;
+    private double pm25;
     private double pm10;
     private double nh3;
 
@@ -32,7 +32,7 @@ public class AirQuality {
                       double no2,
                       double o3,
                       double so2,
-                      double pm2_5,
+                      double pm25,
                       double pm10,
                       double nh3) {
         this.location = location;
@@ -43,7 +43,7 @@ public class AirQuality {
         this.no2 = no2;
         this.o3 = o3;
         this.so2 = so2;
-        this.pm2_5 = pm2_5;
+        this.pm25 = pm25;
         this.pm10 = pm10;
         this.nh3 = nh3;
     }
