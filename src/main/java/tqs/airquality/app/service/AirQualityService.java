@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.String.format;
+
 @Service
 public class AirQualityService {
 
@@ -81,6 +83,7 @@ public class AirQualityService {
             );
 
         } catch (JsonProcessingException e) {
+            LOGGER.severe(format("Error while parsing JSON from external AirQuality API for location %s}", location));
             throw new RuntimeException(ERR_JSON, e);
         }
     }

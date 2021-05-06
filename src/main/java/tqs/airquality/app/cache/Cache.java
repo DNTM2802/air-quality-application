@@ -1,18 +1,27 @@
 package tqs.airquality.app.cache;
 
+import tqs.airquality.app.utils.CacheType;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 public class Cache<T> {
     private long ttl;
     private int requests;
     private int misses;
     private int hits;
+    private CacheType cacheType;
 
     private Map<String, T> cachedRequests;
     private Map<String, Long> cachedRequestsTtl;
+    private static final Logger LOGGER = Logger.getLogger( Cache.class.getName() );
 
-    public Cache(long ttl) {
+    public Cache(long ttl, CacheType cacheType) {
+        this.cacheType=cacheType;
         this.ttl = ttl;
         this.requests = 0;
         this.misses = 0;
@@ -22,21 +31,26 @@ public class Cache<T> {
     }
 
     public void saveRequestToCache(String identifier, T obj) {
+        LOGGER.log(Level.INFO, format("Saving identifier \"%s\" in %s Cache...", identifier, cacheType));
         this.cachedRequests.put(identifier, obj);
         this.cachedRequestsTtl.put(identifier, System.currentTimeMillis() + this.ttl * 1000);
     }
 
     public T getRequestFromCache(String identifier) {
+
         this.requests++;
         T cachedObj = null;
         if (!this.cachedRequestsTtl.containsKey(identifier)){
+            LOGGER.log(Level.INFO, format("Identifier \"%s\" doesn't exist in %s Cache.", identifier, cacheType));
             this.misses++;
         } else if (System.currentTimeMillis() > this.cachedRequestsTtl.get(identifier)){
+            LOGGER.log(Level.INFO, format("Identifier \"%s\" exists in %s Cache but has expired", identifier, cacheType));
             this.misses++;
             this.cachedRequestsTtl.remove(identifier);
             this.cachedRequests.remove(identifier);
         } else {
             this.hits++;
+            LOGGER.log(Level.INFO, format("Identifier \"%s\" exists in %s Cache, returning cached object...", identifier, cacheType ));
             cachedObj = cachedRequests.get(identifier);
 
         }
@@ -54,4 +68,6 @@ public class Cache<T> {
     public int getHits() {
         return hits;
     }
+
+    public CacheType getCacheType() { return cacheType; }
 }

@@ -1,11 +1,7 @@
 package tqs.airquality.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 import tqs.airquality.app.cache.Cache;
 import tqs.airquality.app.models.AirQuality;
 import tqs.airquality.app.service.AirQualityService;
@@ -14,8 +10,9 @@ import tqs.airquality.app.utils.Location;
 
 import java.util.List;
 
-@Controller
-public class AirQualityController {
+@RestController
+@RequestMapping("/api")
+public class AirQualityRestController {
 
     @Autowired
     private AirQualityService airQualityService;
@@ -34,47 +31,29 @@ public class AirQualityController {
 
     private static final String LOCATION = "location";
 
-    @GetMapping("/")
+    @GetMapping("")
     public String home(){
-        return "homepage-air-quality";
+        return "Welcome to AirQuality REST API!";
     }
 
-    @GetMapping("/cache")
-    public String cache(Model model){
-        model.addAttribute("currentDayCache", currentDayCache);
-        model.addAttribute("historicalCache", historicalCache);
-        model.addAttribute("forecastCache", forecastCache);
-        return "cache-information";
+    @GetMapping("/cache/currentDay")
+    public Cache<AirQuality> currentDayCache(){
+        return currentDayCache;
     }
 
-    @GetMapping("/search")
-    public RedirectView redirectWithUsingRedirectView(
-            RedirectAttributes attributes,
-            String address,
-            String scope,
-            String startDate,
-            String endDate
-    ) {
-        if (address.equals("") || scope.equals(""))
-            return new RedirectView("");
-        attributes.addAttribute("address", address);
-        switch (scope) {
-            case "forecast":
-                return new RedirectView("forecast");
-            case "historical":
-                if (startDate.equals("") || endDate.equals(""))
-                    return new RedirectView("");
-                attributes.addAttribute("startDate", startDate);
-                attributes.addAttribute("endDate", endDate);
-                return new RedirectView("historical");
-            default:
-                return new RedirectView("today");
-        }
+    @GetMapping("/cache/historical")
+    public Cache<List<AirQuality>> historicalCache(){
+        return historicalCache;
+    }
+
+    @GetMapping("/cache/forecast")
+    public Cache<List<AirQuality>> forecastCache(){
+        return forecastCache;
     }
 
 
     @GetMapping(value = "/today")
-    public String getAirQualityOfTodayFromCoordinates(String address, Model model) {
+    public AirQuality getAirQualityOfTodayFromCoordinates(String address) {
 
         var airQuality = currentDayCache.getRequestFromCache(address);
         Location location;
@@ -88,14 +67,11 @@ public class AirQualityController {
 
         currentDayCache.saveRequestToCache(address,airQuality);
 
-        model.addAttribute(LOCATION, location);
-        model.addAttribute("airQuality", airQuality);
-
-        return "current-air-quality";
+        return airQuality;
     }
 
     @GetMapping(value = "/forecast")
-    public String getAirQualityForecastFromCoordinates( String address, Model model) {
+    public List<AirQuality> getAirQualityForecastFromCoordinates( String address) {
 
         List<AirQuality> airQualities = forecastCache.getRequestFromCache(address);
         Location location;
@@ -109,18 +85,14 @@ public class AirQualityController {
 
         forecastCache.saveRequestToCache(address,airQualities);
 
-        model.addAttribute(LOCATION, location);
-        model.addAttribute("airQualities", airQualities);
-
-        return "forecast-air-quality";
+        return airQualities;
     }
 
     @GetMapping(value = "/historical")
-    public String getAirQualityHistoricalFromCoordinatesAndStartDateAndEndDate(
+    public List<AirQuality> getAirQualityHistoricalFromCoordinatesAndStartDateAndEndDate(
             String address,
             String startDate,
-            String endDate,
-            Model model) {
+            String endDate) {
 
         String identifier = address+startDate+endDate;
 
@@ -136,9 +108,6 @@ public class AirQualityController {
 
         historicalCache.saveRequestToCache(identifier,airQualities);
 
-        model.addAttribute(LOCATION, location);
-        model.addAttribute("airQualities", airQualities);
-
-        return "historical-air-quality";
+        return airQualities;
     }
 }
