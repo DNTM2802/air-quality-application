@@ -95,7 +95,7 @@ public class AirQualityService {
                 lastDay = new Date(Long.parseLong(objectMapper.readTree(iterator.next().toString()).path("dt") + "000"));
                 while (iterator.hasNext()) {
                     JsonNode n = iterator.next();
-                    Date day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
+                    var day = new Date(Long.parseLong(objectMapper.readTree(n.toString()).path("dt") + "000"));
                     if (day.toString().compareTo(lastDay.toString()) != 0) {
                         lastDay = getDate(location, historical, n, day);
                     }
@@ -149,14 +149,14 @@ public class AirQualityService {
                         location,
                         day,
                         n.path("main").path("aqi").asInt(),
-                        n.path("components").path("co").asDouble(),
-                        n.path("components").path("no").asDouble(),
-                        n.path("components").path("no2").asDouble(),
-                        n.path("components").path("o3").asDouble(),
-                        n.path("components").path("so2").asDouble(),
-                        n.path("components").path("pm2_5").asDouble(),
-                        n.path("components").path("pm10").asDouble(),
-                        n.path("components").path("nh3").asDouble()
+                        n.path(COMPONENTS).path("co").asDouble(),
+                        n.path(COMPONENTS).path("no").asDouble(),
+                        n.path(COMPONENTS).path("no2").asDouble(),
+                        n.path(COMPONENTS).path("o3").asDouble(),
+                        n.path(COMPONENTS).path("so2").asDouble(),
+                        n.path(COMPONENTS).path("pm2_5").asDouble(),
+                        n.path(COMPONENTS).path("pm10").asDouble(),
+                        n.path(COMPONENTS).path("nh3").asDouble()
                 )
         );
         lastDay=day;

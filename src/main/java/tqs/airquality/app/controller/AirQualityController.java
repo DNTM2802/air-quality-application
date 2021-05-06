@@ -29,7 +29,7 @@ public class AirQualityController {
 
     private static final String LOCATION = "location";
 
-    @RequestMapping(path="/", method={RequestMethod.GET})
+    @GetMapping("/")
     public String home(){
         return "homepage-air-quality";
     }
