@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.4
+      - name: Install Google Chrome
+        run: |
+            chmod +x ./scripts/InstallChrome.sh
+            ./scripts/InstallChrome.sh
       - name: Maven Package
         run: mvn -B clean package -DskipTests
       - name: Maven Test
