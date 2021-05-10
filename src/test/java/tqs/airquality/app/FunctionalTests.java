@@ -1,11 +1,15 @@
 package tqs.airquality.app;
 
 import io.github.bonigarcia.seljup.SeleniumJupiter;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 
@@ -14,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -21,16 +26,18 @@ import static org.hamcrest.Matchers.is;
 @ExtendWith(SeleniumJupiter.class)
 public class FunctionalTests {
 
-    HtmlUnitDriver driver;
-    Map<String, Object> vars;
-    JavascriptExecutor js;
+    WebDriver driver;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    FunctionalTests(HtmlUnitDriver driver) {
-        this.driver = driver;
-        js = driver;
-        vars = new HashMap<>();
+    FunctionalTests() {
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
+        driver.manage().timeouts().implicitlyWait(120, TimeUnit.MILLISECONDS);
     }
 
     @Test
