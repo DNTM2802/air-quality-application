@@ -14,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 
 // Simple web page code check with MockMvc (content is already tested in REST Controller Tests)
-public class AirQualityControllerIT {
+class AirQualityControllerIT {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void whenValidAddressForCurrentAq_thenCode200() throws Exception {
+    void whenValidAddressForCurrentAq_thenCode200() throws Exception {
 
         String address = "Murtosa";
 
@@ -30,7 +30,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenValidAddressForForecastAq_thenCode200() throws Exception {
+    void whenValidAddressForForecastAq_thenCode200() throws Exception {
 
         String address = "Murtosa";
 
@@ -40,7 +40,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenValidAddressForHistoricalAq_thenCode200() throws Exception {
+    void whenValidAddressForHistoricalAq_thenCode200() throws Exception {
 
         String address = "Murtosa";
         String startDate = "01/04/2021";
@@ -52,7 +52,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForCurrentAq_thenCode404() throws Exception {
+    void whenInvalidAddressForCurrentAq_thenCode404() throws Exception {
 
         String address = "tqstqstqstqs";
 
@@ -62,7 +62,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForForecastAq_thenCode404() throws Exception {
+    void whenInvalidAddressForForecastAq_thenCode404() throws Exception {
 
         String address = "tqstqstqstqs";
 
@@ -72,7 +72,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForHistoricalAq_thenCode404() throws Exception {
+    void whenInvalidAddressForHistoricalAq_thenCode404() throws Exception {
 
         String address = "tqstqstqstqs";
         String startDate = "01/04/2021";
@@ -84,7 +84,7 @@ public class AirQualityControllerIT {
     }
 
     @Test
-    public void whenGetCache_thenReturnCode200() throws Exception {
+    void whenGetCache_thenReturnCode200() throws Exception {
         mvc.perform(get("/api/cache")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

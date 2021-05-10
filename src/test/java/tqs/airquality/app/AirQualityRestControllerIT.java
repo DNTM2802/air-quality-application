@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 // Rest Controller Tests using "REST Assured"
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AirQualityRestControllerIT {
+class AirQualityRestControllerIT {
 
     @LocalServerPort
     int port;
@@ -25,7 +25,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenValidAddressForCurrentAq_thenCode200AndReturnAq() {
+    void whenValidAddressForCurrentAq_thenCode200AndReturnAq() {
         String address = "Murtosa";
 
         when().
@@ -42,7 +42,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenValidAddressForForecastAq_thenCode200AndReturnAqListWith6Elements() {
+    void whenValidAddressForForecastAq_thenCode200AndReturnAqListWith6Elements() {
         String address = "Murtosa";
 
         when().
@@ -60,7 +60,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenValidAddressAndStartDateAndEndDateForHistoricalAq_thenCode200AndReturnAqListWith8Elements() {
+    void whenValidAddressAndStartDateAndEndDateForHistoricalAq_thenCode200AndReturnAqListWith8Elements() {
 
         String address = "Murtosa";
         String startDate = "01/04/2021";
@@ -81,7 +81,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForCurrentAq_thenCode404AndReturnNotFoundMessage() {
+    void whenInvalidAddressForCurrentAq_thenCode404AndReturnNotFoundMessage() {
         String address = "tqstqstqstqs";
 
         when().
@@ -95,7 +95,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForHistoricalAq_thenCode404AndReturnNotFoundMessage() {
+    void whenInvalidAddressForHistoricalAq_thenCode404AndReturnNotFoundMessage() {
         String address = "tqstqstqstqs";
         String startDate = "01/04/2021";
         String endDate = "08/04/2021";
@@ -111,7 +111,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenInvalidAddressForForecastAq_thenCode404AndReturnNotFoundMessage() {
+    void whenInvalidAddressForForecastAq_thenCode404AndReturnNotFoundMessage() {
         String address = "tqstqstqstqs";
 
         when().
@@ -125,7 +125,7 @@ public class AirQualityRestControllerIT {
     }
 
     @Test
-    public void whenGetCache_thenReturnCode200AndCache() {
+    void whenGetCache_thenReturnCode200AndCache() {
         when().
                 get("/api/cache").
                 then().

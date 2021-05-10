@@ -19,7 +19,7 @@ import java.net.URI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class GeocodingServiceTest {
+class GeocodingServiceTest {
 
     @Value("${api.positionstack.key}")
     private String apiKey;
@@ -33,7 +33,7 @@ public class GeocodingServiceTest {
     private static final String GEOCODING = "http://api.positionstack.com/v1/forward?access_key={apiKey}&query={address}";
 
     @Test
-    public void whenStringAddress_thenReturnLocation() {
+    void whenStringAddress_thenReturnLocation() {
 
         // Input
         String address = "Murtosa";

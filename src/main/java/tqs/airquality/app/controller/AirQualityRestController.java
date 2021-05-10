@@ -11,7 +11,6 @@ import tqs.airquality.app.service.AirQualityService;
 import tqs.airquality.app.service.GeocodingService;
 import tqs.airquality.app.utils.Location;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,7 +56,7 @@ public class AirQualityRestController {
     @GetMapping(value = "/today", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAirQualityOfTodayFromCoordinates(String address) {
 
-        var airQuality = currentDayCache.getRequestFromCache(address);
+        var airQuality = currentDayCache.getRequestFromCache(address.hashCode());
         Location location;
 
         if (airQuality == null){
@@ -68,7 +67,7 @@ public class AirQualityRestController {
             airQuality = airQualityService.getCurrentAirQuality(location);
         }
 
-        currentDayCache.saveRequestToCache(address,airQuality);
+        currentDayCache.saveRequestToCache(address.hashCode(),airQuality);
 
         return new ResponseEntity<>(airQuality, HttpStatus.OK);
     }
@@ -76,7 +75,7 @@ public class AirQualityRestController {
     @GetMapping(value = "/forecast", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAirQualityForecastFromCoordinates( String address) {
 
-        List<AirQuality> airQualities = forecastCache.getRequestFromCache(address);
+        List<AirQuality> airQualities = forecastCache.getRequestFromCache(address.hashCode());
         Location location;
 
         if (airQualities == null){
@@ -87,7 +86,7 @@ public class AirQualityRestController {
             airQualities = airQualityService.getForecastAirQuality(location);
         }
 
-        forecastCache.saveRequestToCache(address,airQualities);
+        forecastCache.saveRequestToCache(address.hashCode(),airQualities);
 
         return new ResponseEntity<>(airQualities, HttpStatus.OK);
     }
@@ -100,7 +99,7 @@ public class AirQualityRestController {
 
         String identifier = address+startDate+endDate;
 
-        List<AirQuality> airQualities = historicalCache.getRequestFromCache(identifier);
+        List<AirQuality> airQualities = historicalCache.getRequestFromCache(identifier.hashCode());
         Location location;
 
         if (airQualities == null){
@@ -111,7 +110,7 @@ public class AirQualityRestController {
             airQualities = airQualityService.getHistoricalAirQuality(location,startDate,endDate);
         }
 
-        historicalCache.saveRequestToCache(identifier,airQualities);
+        historicalCache.saveRequestToCache(identifier.hashCode(),airQualities);
 
         return new ResponseEntity<>(airQualities, HttpStatus.OK);
     }

@@ -25,7 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class AirQualityServiceTest {
+class AirQualityServiceTest {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String AIR_QUALITY_TODAY = "http://api.openweathermap.org/data/2.5/air_pollution?lat={coordLat}&lon={coordLon}&appid={apiKey}";
@@ -42,7 +42,7 @@ public class AirQualityServiceTest {
     private RestTemplate restTemplate;
 
     @Test
-    public void whenLocation_thenReturnCurrentAirQuality() {
+    void whenLocation_thenReturnCurrentAirQuality() {
 
         // Input
         Location location = new Location((float) 40.75117, (float)-8.644131, "Murtosa", "Aveiro", "Portugal");
@@ -62,7 +62,7 @@ public class AirQualityServiceTest {
     }
 
     @Test
-    public void whenLocation_thenReturnForecastAirQuality() {
+    void whenLocation_thenReturnForecastAirQuality() {
 
         // Input
         Location location = new Location((float)40.635014, (float) -8.651136, "Aveiro", "Aveiro", "Portugal");
@@ -80,8 +80,8 @@ public class AirQualityServiceTest {
         // Check output
         assertThat(aqAveiroList.get(0).getLocation()).isEqualTo(location);
         assertThat(aqAveiroList.size()).isGreaterThanOrEqualTo(5);
-        assertThat(aqAveiroList.get(0).getDt().toString()).isEqualTo(LocalDate.now().format(formatter));
-        assertThat(aqAveiroList.get(4).getDt().toString()).isEqualTo(LocalDate.now().plusDays(4).format(formatter));
+        assertThat(aqAveiroList.get(0).getDt()).hasToString(LocalDate.now().format(formatter));
+        assertThat(aqAveiroList.get(4).getDt()).hasToString(LocalDate.now().plusDays(4).format(formatter));
 
     }
 

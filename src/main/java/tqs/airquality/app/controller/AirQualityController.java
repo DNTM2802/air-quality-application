@@ -32,11 +32,15 @@ public class AirQualityController {
     @Autowired
     private Cache<List<AirQuality>> forecastCache;
 
+    // Constants
     private static final String LOCATION = "location";
+    private static final String HOMEPAGE = "homepage-air-quality";
+    private static final String ADDRESS404 = "address404";
+    private static final String ADDRNOTFOUND = "Address not found!";
 
     @GetMapping("/")
     public String home(){
-        return "homepage-air-quality";
+        return HOMEPAGE;
     }
 
     @GetMapping("/cache")
@@ -76,21 +80,21 @@ public class AirQualityController {
     @GetMapping(value = "/today")
     public String getAirQualityOfTodayFromCoordinates(RedirectAttributes attributes, String address, Model model) {
 
-        var airQuality = currentDayCache.getRequestFromCache(address);
+        var airQuality = currentDayCache.getRequestFromCache(address.hashCode());
         Location location;
 
         if (airQuality == null){
             location = geocodingService.getCoordinatesFromAddress(address);
             if (location == null) {
-                model.addAttribute("address404", "Address not found!");
-                return "homepage-air-quality";
+                model.addAttribute(ADDRESS404, ADDRNOTFOUND);
+                return HOMEPAGE;
             }
             airQuality = airQualityService.getCurrentAirQuality(location);
         } else {
             location = airQuality.getLocation();
         }
 
-        currentDayCache.saveRequestToCache(address,airQuality);
+        currentDayCache.saveRequestToCache(address.hashCode(),airQuality);
 
         model.addAttribute(LOCATION, location);
         model.addAttribute("airQuality", airQuality);
@@ -101,21 +105,21 @@ public class AirQualityController {
     @GetMapping(value = "/forecast")
     public String getAirQualityForecastFromCoordinates( String address, Model model) {
 
-        List<AirQuality> airQualities = forecastCache.getRequestFromCache(address);
+        List<AirQuality> airQualities = forecastCache.getRequestFromCache(address.hashCode());
         Location location;
 
         if (airQualities == null){
             location = geocodingService.getCoordinatesFromAddress(address);
             if (location == null) {
-                model.addAttribute("address404", "Address not found!");
-                return "homepage-air-quality";
+                model.addAttribute(ADDRESS404, ADDRNOTFOUND);
+                return HOMEPAGE;
             }
             airQualities = airQualityService.getForecastAirQuality(location);
         } else {
             location = airQualities.get(0).getLocation();
         }
 
-        forecastCache.saveRequestToCache(address,airQualities);
+        forecastCache.saveRequestToCache(address.hashCode(),airQualities);
 
         model.addAttribute(LOCATION, location);
         model.addAttribute("airQualities", airQualities);
@@ -132,21 +136,21 @@ public class AirQualityController {
 
         String identifier = address+startDate+endDate;
 
-        List<AirQuality> airQualities = historicalCache.getRequestFromCache(identifier);
+        List<AirQuality> airQualities = historicalCache.getRequestFromCache(identifier.hashCode());
         Location location;
 
         if (airQualities == null){
             location = geocodingService.getCoordinatesFromAddress(address);
             if (location == null) {
-                model.addAttribute("address404", "Address not found!");
-                return "homepage-air-quality";
+                model.addAttribute(ADDRESS404, ADDRNOTFOUND);
+                return HOMEPAGE;
             }
             airQualities = airQualityService.getHistoricalAirQuality(location,startDate,endDate);
         } else {
             location = airQualities.get(0).getLocation();
         }
 
-        historicalCache.saveRequestToCache(identifier,airQualities);
+        historicalCache.saveRequestToCache(identifier.hashCode(),airQualities);
 
         model.addAttribute(LOCATION, location);
         model.addAttribute("airQualities", airQualities);

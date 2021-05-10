@@ -54,19 +54,13 @@ public class AirQualityService {
         var startDate = convertStartDateToUnixTSString(startDateText);
         var endDate = convertEndDateToUnixTSString(endDateText);
         URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(location.getLatitude(),location.getLongitude(),startDate,endDate,apiKey);
-        System.out.println(startDate);
-        System.out.println(endDate);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToAirQualityList(response, location);
     }
 
     public List<AirQuality> getForecastAirQuality(Location location) {
         URI url = new UriTemplate(AIR_QUALITY_FORECAST).expand(location.getLatitude(),location.getLongitude(),apiKey);
-        System.out.println("Effective URL:");
-        System.out.println(url);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        System.out.println("Effective response:");
-        System.out.println(response);
         return convertJsonToAirQualityListForecast(response, location);
     }
 

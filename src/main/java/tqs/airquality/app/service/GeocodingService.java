@@ -30,7 +30,6 @@ public class GeocodingService {
     public Location getCoordinatesFromAddress(String address) {
         URI url = new UriTemplate(GEOCODING).expand(apiKey,address);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        System.out.println(response);
         return convertJsonToLocation(response);
     }
 

@@ -16,8 +16,8 @@ public class Cache<T> {
     private int hits;
     private CacheType cacheType;
 
-    private Map<String, T> cachedRequests;
-    private Map<String, Long> cachedRequestsTtl;
+    private Map<Integer, T> cachedRequests;
+    private Map<Integer, Long> cachedRequestsTtl;
     private static final Logger LOGGER = Logger.getLogger( Cache.class.getName() );
 
     public Cache(long ttl, CacheType cacheType) {
@@ -30,27 +30,27 @@ public class Cache<T> {
         this.cachedRequestsTtl = new HashMap<>();
     }
 
-    public void saveRequestToCache(String identifier, T obj) {
-        LOGGER.log(Level.INFO, format("Saving identifier \"%s\" in %s Cache...", identifier, cacheType));
+    public void saveRequestToCache(int identifier, T obj) {
+        LOGGER.log(Level.INFO, format("Saving identifier %d in %s Cache...",identifier, cacheType));
         this.cachedRequests.put(identifier, obj);
         this.cachedRequestsTtl.put(identifier, System.currentTimeMillis() + this.ttl * 1000);
     }
 
-    public T getRequestFromCache(String identifier) {
+    public T getRequestFromCache(int identifier) {
 
         this.requests++;
         T cachedObj = null;
         if (!this.cachedRequestsTtl.containsKey(identifier)){
-            LOGGER.log(Level.INFO, format("Identifier \"%s\" doesn't exist in %s Cache.", identifier, cacheType));
+            LOGGER.log(Level.INFO, format("Identifier %d doesn't exist in %s Cache.", identifier, cacheType));
             this.misses++;
         } else if (System.currentTimeMillis() > this.cachedRequestsTtl.get(identifier)){
-            LOGGER.log(Level.INFO, format("Identifier \"%s\" exists in %s Cache but has expired", identifier, cacheType));
+            LOGGER.log(Level.INFO, format("Identifier %d exists in %s Cache but has expired",identifier, cacheType));
             this.misses++;
             this.cachedRequestsTtl.remove(identifier);
             this.cachedRequests.remove(identifier);
         } else {
             this.hits++;
-            LOGGER.log(Level.INFO, format("Identifier \"%s\" exists in %s Cache, returning cached object...", identifier, cacheType ));
+            LOGGER.log(Level.INFO, format("Identifier %d exists in %s Cache, returning cached object...",identifier, cacheType ));
             cachedObj = cachedRequests.get(identifier);
 
         }

@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 
 @ExtendWith(SeleniumJupiter.class)
-public class FunctionalTests {
+class FunctionalTests {
 
     WebDriver driver;
 
@@ -44,7 +44,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void checkCache() {
+    void checkCache() {
         driver.get("http://localhost:8080/cache");
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is("Cache Information"));
         {
@@ -62,7 +62,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void searchInvalidAddressForecast() {
+    void searchInvalidAddressForecast() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("textSearch")).click();
         driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
@@ -80,7 +80,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void searchInvalidAddressHistorical() {
+    void searchInvalidAddressHistorical() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("textSearch")).click();
         driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
@@ -100,7 +100,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void searchInvalidAddressToday() {
+    void searchInvalidAddressToday() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("textSearch")).click();
         driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
@@ -112,7 +112,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void searchValidAddressForecast() {
+    void searchValidAddressForecast() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("scope")).click();
         {
@@ -131,7 +131,7 @@ public class FunctionalTests {
     }
 
     @Test
-    public void searchValidAddressHistorical() {
+    void searchValidAddressHistorical() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("textSearch")).click();
         driver.findElement(By.id("textSearch")).sendKeys("Murtosa");
@@ -153,7 +153,7 @@ public class FunctionalTests {
 
 
     @Test
-    public void searchValidAddressToday() {
+    void searchValidAddressToday() {
         driver.get("http://localhost:8080/");
         driver.findElement(By.id("textSearch")).click();
         driver.findElement(By.id("textSearch")).sendKeys("Murtosa");

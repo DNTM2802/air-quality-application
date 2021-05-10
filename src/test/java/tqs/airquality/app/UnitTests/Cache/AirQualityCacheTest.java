@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class AirQualityCacheTest {
+class AirQualityCacheTest {
 
     private static final Logger LOGGER = Logger.getLogger( AirQualityCacheTest.class.getName() );
 
@@ -33,31 +33,31 @@ public class AirQualityCacheTest {
 
     @Test
     void whenRequestExistsAndNotExpired_thenReturnRequestAndIncreaseHitsAndRequests() {
-        currentDayCache.saveRequestToCache(address, aq);
-        AirQuality aq_result = currentDayCache.getRequestFromCache(address);
-        assertEquals(currentDayCache.getHits(), 1);
-        assertEquals(currentDayCache.getMisses(), 0);
-        assertEquals(currentDayCache.getRequests(), 1);
+        currentDayCache.saveRequestToCache(address.hashCode(), aq);
+        AirQuality aq_result = currentDayCache.getRequestFromCache(address.hashCode());
+        assertEquals(1, currentDayCache.getHits());
+        assertEquals(0, currentDayCache.getMisses());
+        assertEquals(1, currentDayCache.getRequests());
         assertEquals(aq_result,aq);
     }
 
     @Test
     void whenRequestExistsAndExpired_thenReturnRequestAndIncreaseMissesAndRequests() throws InterruptedException {
-        currentDayCache.saveRequestToCache(address, aq);
+        currentDayCache.saveRequestToCache(address.hashCode(), aq);
         waiter.await(2, TimeUnit.SECONDS);
-        AirQuality aq_result = currentDayCache.getRequestFromCache(address);
-        assertEquals(currentDayCache.getHits(), 0);
-        assertEquals(currentDayCache.getMisses(), 1);
-        assertEquals(currentDayCache.getRequests(), 1);
+        AirQuality aq_result = currentDayCache.getRequestFromCache(address.hashCode());
+        assertEquals(0, currentDayCache.getHits());
+        assertEquals(1, currentDayCache.getMisses());
+        assertEquals(1, currentDayCache.getRequests());
         assertNull(aq_result);
     }
 
     @Test
     void whenRequestNotExists_thenReturnNullAndIncreaseMissesAndRequests() {
-        AirQuality aq_result = currentDayCache.getRequestFromCache(address);
-        assertEquals(currentDayCache.getHits(), 0);
-        assertEquals(currentDayCache.getMisses(), 1);
-        assertEquals(currentDayCache.getRequests(), 1);
+        AirQuality aq_result = currentDayCache.getRequestFromCache(address.hashCode());
+        assertEquals(0, currentDayCache.getHits());
+        assertEquals(1, currentDayCache.getMisses());
+        assertEquals(1, currentDayCache.getRequests());
         assertNull(aq_result);
     }
 }
