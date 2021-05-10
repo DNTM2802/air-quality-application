@@ -37,7 +37,7 @@ public class AirQualityServiceTest {
     @InjectMocks
     private AirQualityService airQualityService;
 
-    @Mock
+    @Mock(lenient = true)
     private RestTemplate restTemplate;
 
     @Test

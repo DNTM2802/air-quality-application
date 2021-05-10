@@ -54,6 +54,8 @@ public class AirQualityService {
         var startDate = convertStartDateToUnixTSString(startDateText);
         var endDate = convertEndDateToUnixTSString(endDateText);
         URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(location.getLatitude(),location.getLongitude(),startDate,endDate,apiKey);
+        System.out.println(startDate);
+        System.out.println(endDate);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToAirQualityList(response, location);
     }
