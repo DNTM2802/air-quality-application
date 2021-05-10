@@ -31,8 +31,8 @@ public class AirQualityService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String AIR_QUALITY_TODAY = "http://api.openweathermap.org/data/2.5/air_pollution?lat={coordLat}&lon={coordLon}&appid={apiKey}";
     private static final String AIR_QUALITY_HISTORICAL = "http://api.openweathermap.org/data/2.5/air_pollution/history?lat={coordLat}&lon={coordLon}&start={startDate}&end={endDate}&appid={apiKey}";
@@ -43,7 +43,6 @@ public class AirQualityService {
 
     // ERROR MESSAGES
     private static final String ERR_JSON = "Error parsing JSON";
-
 
     public AirQuality getCurrentAirQuality(Location location) {
         URI url = new UriTemplate(AIR_QUALITY_TODAY).expand(location.getLatitude(),location.getLongitude(),apiKey);
@@ -71,7 +70,6 @@ public class AirQualityService {
             return new AirQuality(
                 location,
                 new Date(Long.parseLong(root.path("list").get(0).path("dt").asText() + "000")),
-                root.path("main").path("aqi").asInt(),
                 root.path("list").get(0).path(COMPONENTS).path("co").asDouble(),
                 root.path("list").get(0).path(COMPONENTS).path("no").asDouble(),
                 root.path("list").get(0).path(COMPONENTS).path("no2").asDouble(),
@@ -151,7 +149,6 @@ public class AirQualityService {
                 new AirQuality(
                         location,
                         day,
-                        n.path("main").path("aqi").asInt(),
                         n.path(COMPONENTS).path("co").asDouble(),
                         n.path(COMPONENTS).path("no").asDouble(),
                         n.path(COMPONENTS).path("no2").asDouble(),

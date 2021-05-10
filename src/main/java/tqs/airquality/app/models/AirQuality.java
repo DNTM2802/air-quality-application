@@ -13,7 +13,6 @@ public class AirQuality {
     private Long id;
     private Location location;
     private Date dt;
-    private int aqi;
 
     private double co;
     private double no;
@@ -26,7 +25,6 @@ public class AirQuality {
 
     public AirQuality(Location location,
                       Date dt,
-                      int aqi,
                       double co,
                       double no,
                       double no2,
@@ -37,7 +35,6 @@ public class AirQuality {
                       double nh3) {
         this.location = location;
         this.dt = dt;
-        this.aqi = aqi;
         this.co = co;
         this.no = no;
         this.no2 = no2;

@@ -74,13 +74,17 @@ public class AirQualityController {
 
 
     @GetMapping(value = "/today")
-    public String getAirQualityOfTodayFromCoordinates(String address, Model model) {
+    public String getAirQualityOfTodayFromCoordinates(RedirectAttributes attributes, String address, Model model) {
 
         var airQuality = currentDayCache.getRequestFromCache(address);
         Location location;
 
         if (airQuality == null){
             location = geocodingService.getCoordinatesFromAddress(address);
+            if (location == null) {
+                model.addAttribute("address404", "Address not found!");
+                return "homepage-air-quality";
+            }
             airQuality = airQualityService.getCurrentAirQuality(location);
         } else {
             location = airQuality.getLocation();
@@ -102,6 +106,10 @@ public class AirQualityController {
 
         if (airQualities == null){
             location = geocodingService.getCoordinatesFromAddress(address);
+            if (location == null) {
+                model.addAttribute("address404", "Address not found!");
+                return "homepage-air-quality";
+            }
             airQualities = airQualityService.getForecastAirQuality(location);
         } else {
             location = airQualities.get(0).getLocation();
@@ -129,6 +137,10 @@ public class AirQualityController {
 
         if (airQualities == null){
             location = geocodingService.getCoordinatesFromAddress(address);
+            if (location == null) {
+                model.addAttribute("address404", "Address not found!");
+                return "homepage-air-quality";
+            }
             airQualities = airQualityService.getHistoricalAirQuality(location,startDate,endDate);
         } else {
             location = airQualities.get(0).getLocation();

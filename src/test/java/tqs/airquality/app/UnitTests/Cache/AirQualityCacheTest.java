@@ -11,9 +11,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class AirQualityCache {
+public class AirQualityCacheTest {
 
-    private static final Logger LOGGER = Logger.getLogger( AirQualityCache.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( AirQualityCacheTest.class.getName() );
 
     // Instance to test
     private Cache<AirQuality> currentDayCache;

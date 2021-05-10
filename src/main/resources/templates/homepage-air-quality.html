@@ -13,13 +13,14 @@
 <form th:action="@{/search}" method="get" id="searchAddress">
     <label for="textSearch">Search</label>
     <input id="textSearch" type="text" name="address">
+    <span th:if="${address404 != null}" th:text="${address404}"></span>
     <select th:name="scope" id="scope">
         <option value="today">Today</option>
         <option value="forecast">Forecast</option>
         <option value="historical">Historical</option>
     </select>
-    <input id="datepickerStartDate" width="270" th:name="startDate" hidden/>
-    <input id="datepickerEndDate" width="270" th:name="endDate" hidden/>
+    <input id="datepickerStartDate" width="270" th:name="startDate" >
+    <input id="datepickerEndDate" width="270" th:name="endDate" >
     <button type="submit">Search</button>
 </form>
 

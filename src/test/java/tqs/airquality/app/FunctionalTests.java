@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 
 import java.time.LocalDate;
@@ -19,15 +19,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @ExtendWith(SeleniumJupiter.class)
-public class FunctionalTest {
+public class FunctionalTests {
 
-    FirefoxDriver driver;
+    HtmlUnitDriver driver;
     Map<String, Object> vars;
     JavascriptExecutor js;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    FunctionalTest(FirefoxDriver driver) {
+    FunctionalTests(HtmlUnitDriver driver) {
         this.driver = driver;
         js = driver;
         vars = new HashMap<>();
@@ -115,7 +115,7 @@ public class FunctionalTest {
         driver.findElement(By.cssSelector("button")).click();
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is("Forecast Data"));
         {
-            List<WebElement> elements = driver.findElements(By.cssSelector("tr:nth-child(6) > td:nth-child(9)"));
+            List<WebElement> elements = driver.findElements(By.cssSelector("tr:nth-child(5) > td:nth-child(9)"));
             assert(elements.size() > 0);
         }
     }
