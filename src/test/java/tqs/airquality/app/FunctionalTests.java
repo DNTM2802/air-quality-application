@@ -2,8 +2,10 @@ package tqs.airquality.app;
 
 import io.github.bonigarcia.seljup.SeleniumJupiter;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 import java.time.LocalDate;
@@ -30,10 +33,10 @@ import static org.hamcrest.Matchers.is;
 class FunctionalTests {
 
     WebDriver driver;
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    FunctionalTests() {
+    FunctionalTests()
+    {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -46,17 +49,17 @@ class FunctionalTests {
     @Test
     void checkCache() {
         driver.get("http://localhost:8080/cache");
-        assertThat(driver.findElement(By.cssSelector("h2")).getText(), is("Cache Information"));
+        assertThat(driver.findElement(By.cssSelector(".page-title")).getText(), is("Cache Statistics"));
         {
             List<WebElement> elements = driver.findElements(By.xpath("//td"));
             assert(elements.size() > 0);
         }
         {
-            List<WebElement> elements = driver.findElements(By.xpath("//table[2]/tbody/tr/td"));
+            List<WebElement> elements = driver.findElements(By.xpath("//tr[2]/td"));
             assert(elements.size() > 0);
         }
         {
-            List<WebElement> elements = driver.findElements(By.xpath("//table[3]/tbody/tr/td"));
+            List<WebElement> elements = driver.findElements(By.xpath("//tr[3]/td"));
             assert(elements.size() > 0);
         }
     }
@@ -64,17 +67,17 @@ class FunctionalTests {
     @Test
     void searchInvalidAddressForecast() {
         driver.get("http://localhost:8080/");
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("tqstqstqstqs");
         driver.findElement(By.id("scope")).click();
         {
             WebElement dropdown = driver.findElement(By.id("scope"));
             dropdown.findElement(By.xpath("//option[. = 'Forecast']")).click();
         }
         driver.findElement(By.cssSelector("option:nth-child(2)")).click();
-        driver.findElement(By.cssSelector("button")).click();
+        driver.findElement(By.cssSelector(".btn-submit")).click();
         {
-            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(3)"));
+            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(4)"));
             assert(elements.size() > 0);
         }
     }
@@ -82,19 +85,17 @@ class FunctionalTests {
     @Test
     void searchInvalidAddressHistorical() {
         driver.get("http://localhost:8080/");
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("tqstqstqstqs");
         driver.findElement(By.id("scope")).click();
-        {
-            WebElement dropdown = driver.findElement(By.id("scope"));
-            dropdown.findElement(By.xpath("//option[. = 'Historical']")).click();
-        }
-        driver.findElement(By.id("datepickerEndDate")).sendKeys("08/04/2021");
-        driver.findElement(By.id("datepickerStartDate")).sendKeys("01/04/2021");
         driver.findElement(By.cssSelector("option:nth-child(3)")).click();
-        driver.findElement(By.cssSelector("button")).click();
+        driver.findElement(By.id("input-start")).click();
+        driver.findElement(By.id("input-start")).sendKeys("01/05/2021");
+        driver.findElement(By.id("input-end")).click();
+        driver.findElement(By.id("input-end")).sendKeys("08/05/2021");
+        driver.findElement(By.cssSelector(".btn-submit")).click();
         {
-            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(3)"));
+            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(4)"));
             assert(elements.size() > 0);
         }
     }
@@ -102,11 +103,11 @@ class FunctionalTests {
     @Test
     void searchInvalidAddressToday() {
         driver.get("http://localhost:8080/");
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("tqstqstqstqstqs");
-        driver.findElement(By.cssSelector("button")).click();
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("tqstqstqstqstqs");
+        driver.findElement(By.cssSelector(".btn-submit")).click();
         {
-            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(3)"));
+            List<WebElement> elements = driver.findElements(By.cssSelector("span:nth-child(4)"));
             assert(elements.size() > 0);
         }
     }
@@ -114,16 +115,15 @@ class FunctionalTests {
     @Test
     void searchValidAddressForecast() {
         driver.get("http://localhost:8080/");
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("Murtosa");
         driver.findElement(By.id("scope")).click();
         {
             WebElement dropdown = driver.findElement(By.id("scope"));
             dropdown.findElement(By.xpath("//option[. = 'Forecast']")).click();
         }
         driver.findElement(By.cssSelector("option:nth-child(2)")).click();
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("Murtosa");
-        driver.findElement(By.cssSelector("button")).click();
-        assertThat(driver.findElement(By.cssSelector("h2")).getText(), is("Forecast Data"));
+        driver.findElement(By.cssSelector(".btn-submit")).click();
         {
             List<WebElement> elements = driver.findElements(By.cssSelector("tr:nth-child(5) > td:nth-child(9)"));
             assert(elements.size() > 0);
@@ -133,33 +133,47 @@ class FunctionalTests {
     @Test
     void searchValidAddressHistorical() {
         driver.get("http://localhost:8080/");
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("Murtosa");
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("Murtosa");
         driver.findElement(By.id("scope")).click();
         {
             WebElement dropdown = driver.findElement(By.id("scope"));
             dropdown.findElement(By.xpath("//option[. = 'Historical']")).click();
         }
         driver.findElement(By.cssSelector("option:nth-child(3)")).click();
-        driver.findElement(By.id("datepickerStartDate")).click();
-        driver.findElement(By.id("datepickerStartDate")).sendKeys("01/04/2021");
-        driver.findElement(By.id("datepickerEndDate")).click();
-        driver.findElement(By.id("datepickerEndDate")).sendKeys("08/04/2021");
-        driver.findElement(By.cssSelector("button")).click();
-        assertThat(driver.findElement(By.cssSelector("h2")).getText(), is("Historical Data"));
-        assertThat(driver.findElement(By.cssSelector("tr:nth-child(1) > td:nth-child(9)")).getText(), is("2021-04-01"));
-        assertThat(driver.findElement(By.cssSelector("tr:nth-child(8) > td:nth-child(9)")).getText(), is("2021-04-08"));
+        driver.findElement(By.id("input-start")).click();
+        driver.findElement(By.id("input-start")).sendKeys("01/05/2021");
+        driver.findElement(By.id("input-end")).click();
+        driver.findElement(By.id("input-start")).click();
+        driver.findElement(By.id("input-start")).click();
+        driver.findElement(By.id("input-start")).sendKeys("01/05/2021");
+        driver.findElement(By.id("input-end")).click();
+        driver.findElement(By.id("input-end")).click();
+        driver.findElement(By.id("input-end")).sendKeys("08/05/2021");
+        driver.findElement(By.id("searchAddress")).click();
+        driver.findElement(By.cssSelector(".btn-submit")).click();
+        {
+            List<WebElement> elements = driver.findElements(By.cssSelector("tr:nth-child(1) > td:nth-child(9)"));
+            assert(elements.size() > 0);
+        }
+        {
+            List<WebElement> elements = driver.findElements(By.cssSelector("tr:nth-child(8) > td:nth-child(9)"));
+            assert(elements.size() > 0);
+        }
     }
 
 
     @Test
     void searchValidAddressToday() {
         driver.get("http://localhost:8080/");
-        driver.findElement(By.id("textSearch")).click();
-        driver.findElement(By.id("textSearch")).sendKeys("Murtosa");
-        driver.findElement(By.cssSelector("button")).click();
-        assertThat(driver.findElement(By.cssSelector("body > h3")).getText(), is("Today Data"));
-        assertThat(driver.findElement(By.cssSelector("p:nth-child(18)")).getText(), is(LocalDate.now().format(formatter)));
+        driver.findElement(By.name("address")).click();
+        driver.findElement(By.name("address")).sendKeys("Murtosa");
+        driver.findElement(By.cssSelector(".btn-submit")).click();
+        {
+            List<WebElement> elements = driver.findElements(By.cssSelector(".col-12 > .m-t-5"));
+            assert(elements.size() > 0);
+        }
+        assertThat(driver.findElement(By.cssSelector(".col-12 > .m-t-5")).getText(), is(LocalDate.now().format(formatter)));
     }
 
 }
