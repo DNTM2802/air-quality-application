@@ -45,12 +45,14 @@ public class AirQualityService {
     private static final String ERR_JSON = "Error parsing JSON";
 
     public AirQuality getCurrentAirQuality(Location location) {
+        LOGGER.log(Level.INFO,"Getting current Air Quality for provided location...");
         URI url = new UriTemplate(AIR_QUALITY_TODAY).expand(location.getLatitude(),location.getLongitude(),apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToAirQuality(response, location);
     }
 
     public List<AirQuality> getHistoricalAirQuality(Location location, String startDateText, String endDateText) {
+        LOGGER.log(Level.INFO,"Getting historical Air Quality for provided location and dates...");
         var startDate = convertStartDateToUnixTSString(startDateText);
         var endDate = convertEndDateToUnixTSString(endDateText);
         URI url = new UriTemplate(AIR_QUALITY_HISTORICAL).expand(location.getLatitude(),location.getLongitude(),startDate,endDate,apiKey);
@@ -59,6 +61,7 @@ public class AirQualityService {
     }
 
     public List<AirQuality> getForecastAirQuality(Location location) {
+        LOGGER.log(Level.INFO,"Getting forecast Air Quality for provided location...");
         URI url = new UriTemplate(AIR_QUALITY_FORECAST).expand(location.getLatitude(),location.getLongitude(),apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToAirQualityListForecast(response, location);
@@ -168,7 +171,7 @@ public class AirQualityService {
         try {
             dateDT = dateFormat.parse(dateText);
         } catch (ParseException e) {
-            LOGGER.log(Level.WARNING,"context", e);
+            LOGGER.log(Level.WARNING,"Error parsing provided startDate to UNIX date format.");
         }
         assert dateDT != null;
         return String.valueOf((dateDT.getTime() - 86400000L) / 1000L);
@@ -179,7 +182,7 @@ public class AirQualityService {
         try {
             dateDT = dateFormat.parse(dateText);
         } catch (ParseException e) {
-            LOGGER.log(Level.WARNING,"context", e);
+            LOGGER.log(Level.WARNING,"Error parsing provided endDate to UNIX date format.", e);
         }
         assert dateDT != null;
         return String.valueOf(dateDT.getTime() / 1000L);

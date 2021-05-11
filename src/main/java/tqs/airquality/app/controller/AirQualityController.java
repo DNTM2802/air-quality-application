@@ -13,6 +13,8 @@ import tqs.airquality.app.service.GeocodingService;
 import tqs.airquality.app.utils.Location;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Controller
 public class AirQualityController {
@@ -38,6 +40,8 @@ public class AirQualityController {
     private static final String ADDRESS404 = "address404";
     private static final String ADDRNOTFOUND = "Address not found!";
 
+    private static final Logger LOGGER = Logger.getLogger( AirQualityRestController.class.getName() );
+
     @GetMapping("/")
     public String home(){
         return HOMEPAGE;
@@ -45,6 +49,9 @@ public class AirQualityController {
 
     @GetMapping("/cache")
     public String cache(Model model){
+
+        LOGGER.log(Level.INFO,"New GET /cache request.");
+
         model.addAttribute("currentDayCache", currentDayCache);
         model.addAttribute("historicalCache", historicalCache);
         model.addAttribute("forecastCache", forecastCache);
@@ -64,14 +71,19 @@ public class AirQualityController {
         attributes.addAttribute("address", address);
         switch (scope) {
             case "forecast":
+                LOGGER.log(Level.INFO,"New GET /search request redirected to /forecast.");
                 return new RedirectView("forecast");
             case "historical":
-                if (startDate.equals("") || endDate.equals(""))
+                if (startDate.equals("") || endDate.equals("")) {
+                    LOGGER.log(Level.WARNING,"New GET /search request redirected to / because invalid dates.");
                     return new RedirectView("");
+                }
+                LOGGER.log(Level.INFO,"New GET /search request redirected to /historical.");
                 attributes.addAttribute("startDate", startDate);
                 attributes.addAttribute("endDate", endDate);
                 return new RedirectView("historical");
             default:
+                LOGGER.log(Level.INFO,"New GET /search request redirected to /today.");
                 return new RedirectView("today");
         }
     }
@@ -79,6 +91,8 @@ public class AirQualityController {
 
     @GetMapping(value = "/today")
     public String getAirQualityOfTodayFromCoordinates(RedirectAttributes attributes, String address, Model model) {
+
+        LOGGER.log(Level.INFO,"New GET /today request.");
 
         var airQuality = currentDayCache.getRequestFromCache(address.hashCode());
         Location location;
@@ -104,6 +118,8 @@ public class AirQualityController {
 
     @GetMapping(value = "/forecast")
     public String getAirQualityForecastFromCoordinates( String address, Model model) {
+
+        LOGGER.log(Level.INFO,"New GET /forecast request.");
 
         List<AirQuality> airQualities = forecastCache.getRequestFromCache(address.hashCode());
         Location location;
@@ -133,6 +149,8 @@ public class AirQualityController {
             String startDate,
             String endDate,
             Model model) {
+
+        LOGGER.log(Level.INFO,"New GET /historical request.");
 
         String identifier = address+startDate+endDate;
 

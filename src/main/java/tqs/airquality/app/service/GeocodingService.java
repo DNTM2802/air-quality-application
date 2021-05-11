@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 import tqs.airquality.app.utils.Location;
 import java.net.URI;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
@@ -28,6 +29,7 @@ public class GeocodingService {
     private static final Logger LOGGER = Logger.getLogger( GeocodingService.class.getName() );
 
     public Location getCoordinatesFromAddress(String address) {
+        LOGGER.log(Level.INFO,"Getting location for provided address...");
         URI url = new UriTemplate(GEOCODING).expand(apiKey,address);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return convertJsonToLocation(response);

@@ -12,6 +12,7 @@ import java.util.List;
 
 @Configuration
 public class AirQualityConfig {
+
     private Cache<AirQuality> currentDayCache = new Cache<>(120, CacheType.CURRENT_DAY);
     private Cache<List<AirQuality>> historicalCache = new Cache<>(120, CacheType.HISTORICAL);
     private Cache<List<AirQuality>> forecastCache = new Cache<>(120, CacheType.FORECAST);
