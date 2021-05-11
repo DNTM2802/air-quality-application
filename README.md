@@ -5,3 +5,13 @@
 
 Multi-layer web application using Spring Boot and an API to provide details on air quality for a certain region/city.
 Includes integration tests and continuous integration using GitHub Actions.
+
+[SonarCloud QA Dashboard](https://sonarcloud.io/dashboard?id=DNTM2802_air-quality-application)
+
+Demo - Soon.
+
+Run on Docker:
+
+```
+docker run -p 8080:8080 dntm2802/air-quality-application-92963:latest
+```
