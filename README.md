@@ -10,6 +10,8 @@ Includes integration tests and continuous integration using GitHub Actions.
 
 [Demo Video](https://youtu.be/oeXSRsTIjGE)
 
+[Deployed with Heroku](https://air-quality-92963.herokuapp.com/)
+
 Run on Docker:
 
 ```
