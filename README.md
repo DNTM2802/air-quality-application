@@ -8,7 +8,7 @@ Includes integration tests and continuous integration using GitHub Actions.
 
 [SonarCloud QA Dashboard](https://sonarcloud.io/dashboard?id=DNTM2802_air-quality-application)
 
-Demo - Soon.
+[Demo Video](https://youtu.be/oeXSRsTIjGE)
 
 Run on Docker:
 
