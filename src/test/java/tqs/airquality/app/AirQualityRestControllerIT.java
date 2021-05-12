@@ -1,7 +1,6 @@
 package tqs.airquality.app;
 
 import io.restassured.RestAssured;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,7 @@ class AirQualityRestControllerIT {
     void whenValidAddressForCurrentAq_thenCode200AndReturnAq() {
         String address = "Murtosa";
 
-        when().
+        RestAssured.when().
                 get("/api/today?address={address}", address).
                 then().
                 statusCode(200)
@@ -45,7 +44,7 @@ class AirQualityRestControllerIT {
     void whenValidAddressForForecastAq_thenCode200AndReturnAqListWith6Elements() {
         String address = "Murtosa";
 
-        when().
+        RestAssured.when().
                 get("/api/forecast?address={address}", address).
                 then().
                 statusCode(200)
@@ -66,7 +65,7 @@ class AirQualityRestControllerIT {
         String startDate = "01/04/2021";
         String endDate = "08/04/2021";
 
-        when().
+        RestAssured.when().
                 get("/api/historical?address={address}&startDate={startDate}&endDate={endDate}", address, startDate, endDate).
                 then().
                 statusCode(200)
@@ -84,7 +83,7 @@ class AirQualityRestControllerIT {
     void whenInvalidAddressForCurrentAq_thenCode404AndReturnNotFoundMessage() {
         String address = "tqstqstqstqs";
 
-        when().
+        RestAssured.when().
                 get("/api/today?address={address}", address).
                 then().
                 statusCode(404)
@@ -100,7 +99,7 @@ class AirQualityRestControllerIT {
         String startDate = "01/04/2021";
         String endDate = "08/04/2021";
 
-        when().
+        RestAssured.when().
                 get("/api/historical?address={address}&startDate={startDate}&endDate={endDate}", address, startDate, endDate).
                 then().
                 statusCode(404)
@@ -114,7 +113,7 @@ class AirQualityRestControllerIT {
     void whenInvalidAddressForForecastAq_thenCode404AndReturnNotFoundMessage() {
         String address = "tqstqstqstqs";
 
-        when().
+        RestAssured.when().
                 get("/api/forecast?address={address}", address).
                 then().
                 statusCode(404)
@@ -126,7 +125,7 @@ class AirQualityRestControllerIT {
 
     @Test
     void whenGetCache_thenReturnCode200AndCache() {
-        when().
+        RestAssured.when().
                 get("/api/cache").
                 then().
                 statusCode(200)
